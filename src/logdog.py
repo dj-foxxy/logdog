@@ -1,4 +1,7 @@
 #!/usr/bin/env python2.7
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 from argparse import ArgumentParser
 import fcntl
 import os
@@ -103,8 +106,8 @@ allocate_color('ActivityManager')
 allocate_color('ActivityThread')
 
 TAGTYPE_WIDTH = 3
-TAG_WIDTH = 20
-PROCESS_WIDTH = 8 # 8 or -1
+TAG_WIDTH = 10
+PROCESS_WIDTH = -1 # 8 or -1
 HEADER_SIZE = TAGTYPE_WIDTH + 1 + TAG_WIDTH + 1 + PROCESS_WIDTH + 1
 
 TAGTYPES = {
@@ -150,7 +153,8 @@ def do(logdog):
 
 def build_argument_parser():
     argument_parser = ArgumentParser()
-    argument_parser.add_argument('-s', '--stdin', action='store_true')
+    add = argument_parser.add_argument
+    add('-s', '--stdin', action='store_true')
     return argument_parser
 
 def main(argv=None):
@@ -158,15 +162,16 @@ def main(argv=None):
         argv = sys.argv
     args = build_argument_parser().parse_args(args=argv[1:])
 
-    if args.stdin:
-        logdog = Logdog.from_stdin()
-    else:
-        logdog = Logdog.from_adb()
+    while True:
+        if args.stdin:
+            logdog = Logdog.from_stdin()
+        else:
+            logdog = Logdog.from_adb()
 
-    try:
-        do(logdog)
-    except KeyboardInterrupt:
-        pass
+        try:
+            do(logdog)
+        except KeyboardInterrupt:
+            break
 
 if __name__ == '__main__':
     exit(main())

@@ -60,8 +60,9 @@ def extract_main_activity(manifest_path):
     return  package, activity_name
 
 def launch_activity(package, activity):
+    join = '' if activity.startswith('.') else '.'
     args = ('adb', 'shell', 'am', 'start', '-a', ACTION_MAIN, '-n',
-            '%s/%s.%s' % (package, package, activity))
+            '%s/%s%s%s' % (package, package, join, activity))
     subprocess.check_call(args)
 
 def main(args=None):
